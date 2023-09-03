@@ -30,25 +30,16 @@
   word-wrap: break-word; }
 
 .reveal h1 {
-	font-size: 1.50em;
+	font-size: 1.0em;
 }
 
 .reveal h2 {
-	font-size:1.875em;
+	font-size:1.50em;
 }
 
 /*********************************************
  * OTHER
  *********************************************/
-
-.reveal p {
-	text-align: right;
-	text-indent: 50px;
-	font-size: 0.70em;
-	font-weight: 400; 
-}
-
-
 
 /* Ensure certain elements are never larger than the slide itself */
 .reveal img,
@@ -57,6 +48,7 @@
   max-width: 95%;
   max-height: 95%; }
   
+
   
 /*********************************************
  * LINKS
