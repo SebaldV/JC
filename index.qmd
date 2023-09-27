@@ -26,7 +26,7 @@ rm(list = ls())
 # ideally we would be able to loop this whole file for all papers
 # not sure how to  do that practically without making it unreadable
 # slide loops are hard to understand
-slide_pub <- c("Reid2022")
+slide_pub <- c("Green2023")
 
 library(plotly)
 library(data.table)
@@ -197,12 +197,38 @@ for (i in 1:nrow(df)) {
 }}
 ```
 
+
+## High level nuclease and target features for all crosses
+
+```{r, results='asis', fig.height = 9, fig.width = 16}
+
+
+Figure <- SankeyPlot(
+  Data = cross_data,
+  Axis_factors =
+    c(
+      'Publication',
+      'Source',
+      "Nuclease.Promoter.5UTR",
+      "Nuclease.Insertion.Variant",
+      "D.Target.Gene",
+      "D1.Nuc.Pheno.Type"
+    ),
+  Fill_factor =  'Cross.Name',
+  factor_levels_values = NA,
+  metric = NA,
+  Names_List
+) + theme(legend.position = "none")
+
+Figure
+
+```
+
+
 ::: smaller
 ## Drive element DNA maps (blue = url) and attributes
 
 ```{r, results='asis'}
-
-
 # Here we list out the metrics
 # I should add in the definitions from overleaf
 # We indicate if there is data for a particular metric in the paper
@@ -235,8 +261,8 @@ drive_design_table <-
   cross_summary_urls[cross_summary_urls$Publication %in% slide_pub, ]
 
 drive_design_factors <- list(
-  # 'Publication' = "Papers this element appears in",
-#  'Misc.Factor' = "Misc feature",
+# 'Publication' = "Papers this element appears in",
+# 'Misc.Factor' = "Misc feature",
   'Target.Locus.Sequence.Link' = "Target locus",
   'Drive.Inserted.Link' = "Drive",
   'Drive.Target.Alignment.Link' = "Drive:Target aligned (these Benchling links have issues)",
@@ -320,7 +346,7 @@ drive_design_table <-
   cross_summary_urls[cross_summary_urls$Publication %in% slide_pub, ]
 
 drive_design_factors <- list(
-#  'Misc.Factor' = "Misc feature",
+# 'Misc.Factor' = "Misc feature",
   'Nuclease.Insertion.Variant' = "Nuclease insertion index/locus",
   'Nuclease.Inserted.Link' = "Nuclease carrying element",
   'Nuclease.Promoter.5UTR.Size' = "Promoter + 5UTR size (bp)",
@@ -342,7 +368,13 @@ for (i in 1:nrow(drive_design_table)) {
     
   }
   
-  drive_design_table[i, ]$Publication <-
+  drive_design_table[i, ]$Nuclease.Insertion.Variant <-
+    paste(unique(df$Nuclease.Insertion.Variant), collapse = " | ")
+  
+    drive_design_table[i, ]$Nuclease.Inserted.Link <-
+    paste(unique(df$Nuclease.Inserted.Link), collapse = " | ")
+  
+    drive_design_table[i, ]$Publication <-
     paste(unique(df$Publication), collapse = " | ")
   
 }
@@ -361,32 +393,6 @@ pander::pandoc.table(drive_design_table, split.table = Inf)
 
 ```
 :::
-
-## High level nuclease and target features for all crosses
-
-```{r, results='asis', fig.height = 9, fig.width = 16}
-
-
-Figure <- SankeyPlot(
-  Data = cross_data,
-  Axis_factors =
-    c(
-      'Publication',
-      'Source',
-      "Nuclease.Promoter.5UTR",
-      "Nuclease.Insertion.Variant",
-      "D.Target.Gene",
-      "D1.Nuc.Pheno.Type"
-    ),
-  Fill_factor =  'Cross.Name',
-  factor_levels_values = NA,
-  metric = NA,
-  Names_List
-) + theme(legend.position = "none")
-
-Figure
-
-```
 
 ## Cross types (sex/nuclease;gRNA)
 
@@ -563,9 +569,9 @@ for (metric in names(factor_levels_values)) {
       factor_list_custom <- c("ID", #"Cross",
                               names(cross_matching[cross_matching_selected]))
     }
-    
+
     for (factor in factor_list_custom) {
-      if (length(unique(cross_data[cross_data[, metric] != "Null", factor])) > 1) {
+      if (length(unique(cross_data[cross_data[, metric] != "Null", factor])) > 1 | factor == "ID") {
         
         # Y axis metric
         input_df$metric <- metric
@@ -640,7 +646,7 @@ Line_meaning <- "Lines are drawn between paired crosses that are identical for t
 ```
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -653,7 +659,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -666,7 +672,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -679,7 +685,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -692,7 +698,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -705,7 +711,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -718,7 +724,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -731,7 +737,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -744,7 +750,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -757,7 +763,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -770,7 +776,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -783,7 +789,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -796,7 +802,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -809,7 +815,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -822,7 +828,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -835,7 +841,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -848,7 +854,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -861,7 +867,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -874,7 +880,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -887,7 +893,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -900,7 +906,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -913,7 +919,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -926,7 +932,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -939,7 +945,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -952,7 +958,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -965,7 +971,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -978,7 +984,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -991,7 +997,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1004,7 +1010,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1017,7 +1023,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1030,7 +1036,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1043,7 +1049,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1056,7 +1062,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1069,7 +1075,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1082,7 +1088,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1095,7 +1101,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1108,7 +1114,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1121,7 +1127,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1134,7 +1140,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1147,7 +1153,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1160,7 +1166,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1173,7 +1179,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1186,7 +1192,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1199,7 +1205,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1212,7 +1218,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1225,7 +1231,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1238,7 +1244,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1251,7 +1257,7 @@ i <- i + 1
 :::
 
 ::: smaller
-```{r , eval= (i < widgets_numb), results = 'asis'}
+```{r , eval= (i <= widgets_numb), results = 'asis'}
 pander::pandoc.header(Title_vec[i], level = 2)
 widget_list[[i]]
 pander::pandoc.p(str_c("X-axis: ", definitions[Factor_vec[i]], ""))
@@ -1329,5 +1335,16 @@ pander::pandoc.p(str_c("* ", "Note about exclusion: TableS2 G2 OX/IX was exclude
                        ))
 
 pander::pandoc.p(str_c("* ", "Three replicates are described for pooled data shown in Table1, TableS3, TableS4 and TableS5. Could you provide the data for these individuals replicates before they were pooled? "))
+
+```
+
+```{r , eval="Green2023" %in% slide_pub, results = 'asis'}
+
+pander::pandoc.header(str_c(clarif_text, "Green2023"), level = 2)
+
+pander::pandoc.p(str_c("* ", "\"Fortunately, we also recovered a minority of knock-in larvae that had integrated the Lp293 GD construct as expected, marked with DsRedNLS only (Suppl. Fig. 1A). However, no evidence of gene drive was observed in further generations, as DsRed inheritance did not exceed 50% when crossing heterozygotes to WT.\" Do you have progeny counts for these crosses? Our database framework does not allow us to incoperate data with only percentages."))
+
+pander::pandoc.p(str_c("* ", "\"To distinguish among these possibilities, we generated females carrying single heterozygous copies of the three unlinked transgenes SagGDzpg, Lp::Sc2A10 and a non fluorescent (puromycin resistance-marked) vasa-Cas9.\" To account for possible deposition, could you let us know what cross was performed to create these triple-hets (e.g., female Lp-210; Saglin-GD X male vasa-Cas9)?"))
+
 
 ```
