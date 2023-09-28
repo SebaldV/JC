@@ -11,11 +11,10 @@ css: styles.css
 ---
 
 ## What is this presentation?
-
 -   Slides are generated in R from a meta-analysis data set and screenshots from the paper
 -   Feedback on my interpretation of the paper and how best to present it is very much appreciated
 -   In addition to these JCs, we intended to send slides to the original authors to allow them the opportunity to find mistakes in our interpretation of their data
--   Suggestions you make can be simultaneously applied to the code for \>80 papers
+-   Suggestions you make can be simultaneously applied to the code for \>80 papers: https://docs.google.com/spreadsheets/d/1kzc8SkY2fb0NEeGcFSwGPR9j_cCKWgiv9lECuCD97UI/edit?usp=sharing
 -   The same analysis pipeline and figures are used for a manuscript in preparation and a webtool: https://sverkuijl.shinyapps.io/GeneDrive/
 -   Currently the meta-analysis team is Sebald Verkuijl, Edward Ivimey-Cook, Nikolai Windbichler, Philip Leftwich, Michael Bonsall
 
@@ -27,6 +26,9 @@ rm(list = ls())
 # not sure how to  do that practically without making it unreadable
 # slide loops are hard to understand
 slide_pub <- c("Green2023")
+
+# Include figures
+include_paper_figures <- FALSE
 
 library(plotly)
 library(data.table)
@@ -117,6 +119,8 @@ List$Promoter_List <- levels(factor(cross_data$Nuclease.Promoter.5UTR))
 List$F1_focus_List <- levels(factor(cross_data$D1.Zygote.Genotype))
 List$Publication_List <- levels(factor(cross_data$Publication))
 
+clarif_text <- "Meta-analysis requests for clarification for "
+
 ```
 
 ```{r, include=FALSE}
@@ -171,7 +175,7 @@ create_saved_fig_slide <- function(slide_title, image_file) {
 }
 ```
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Title figure
 df <- combined_image_df[combined_image_df$group == "T",]
@@ -181,12 +185,9 @@ for (i in 1:nrow(df)) {
    create_saved_fig_slide(df[i,"titles"],df[i,"file"])
 }}
 
-
-clarif_text <- "Meta-analysis requests for clarification for "
-
 ```
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Intro figures
 df <- combined_image_df[combined_image_df$group == "G",]
@@ -197,17 +198,15 @@ for (i in 1:nrow(df)) {
 }}
 ```
 
-
 ## High level nuclease and target features for all crosses
 
 ```{r, results='asis', fig.height = 9, fig.width = 16}
-
 
 Figure <- SankeyPlot(
   Data = cross_data,
   Axis_factors =
     c(
-      'Publication',
+      'Cross.Name',
       'Source',
       "Nuclease.Promoter.5UTR",
       "Nuclease.Insertion.Variant",
@@ -223,7 +222,6 @@ Figure <- SankeyPlot(
 Figure
 
 ```
-
 
 ::: smaller
 ## Drive element DNA maps (blue = url) and attributes
@@ -404,7 +402,7 @@ Figure <- SankeyPlot(
   Data = cross_data,
   Axis_factors =
     c(
-      'Publication',
+      'Cross.Name',
       'Source',
       "D1.Sex",
       "F1.NG_Unsorted",
@@ -421,7 +419,7 @@ Figure
 
 ```
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Construct(gene) overview figure
 df <- combined_image_df[combined_image_df$group == "I",]
@@ -1269,7 +1267,7 @@ i <- i + 1
 ```
 :::
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Construct(gene) overview figure
 df <- combined_image_df[combined_image_df$group == "C",]
@@ -1281,7 +1279,7 @@ for (i in 1:nrow(df)) {
 }
 ```
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Construct(gene) overview figure
 df <- combined_image_df[combined_image_df$group == "E",]
@@ -1293,7 +1291,7 @@ for (i in 1:nrow(df)) {
 }
 ```
 
-```{r, results='asis'}
+```{r , eval= (include_paper_figures == TRUE), results = 'asis'}
 
 # Construct(gene) overview figure
 df <- combined_image_df[combined_image_df$group == "M",]
@@ -1342,9 +1340,14 @@ pander::pandoc.p(str_c("* ", "Three replicates are described for pooled data sho
 
 pander::pandoc.header(str_c(clarif_text, "Green2023"), level = 2)
 
-pander::pandoc.p(str_c("* ", "\"Fortunately, we also recovered a minority of knock-in larvae that had integrated the Lp293 GD construct as expected, marked with DsRedNLS only (Suppl. Fig. 1A). However, no evidence of gene drive was observed in further generations, as DsRed inheritance did not exceed 50% when crossing heterozygotes to WT.\" Do you have progeny counts for these crosses? Our database framework does not allow us to incoperate data with only percentages."))
+pander::pandoc.p(str_c("* ", "\"Fortunately, we also recovered a minority of knock-in larvae that had integrated the Lp-GD construct as expected, marked with DsRedNLS only (Suppl. Fig. 1A). However, no evidence of gene drive was observed in further generations, as DsRed inheritance did not exceed 50% when crossing heterozygotes to WT.\" \n Do you have integer progeny counts for these crosses? Our database framework does not allow us to incorporate data with only percentages."))
 
-pander::pandoc.p(str_c("* ", "\"To distinguish among these possibilities, we generated females carrying single heterozygous copies of the three unlinked transgenes SagGDzpg, Lp::Sc2A10 and a non fluorescent (puromycin resistance-marked) vasa-Cas9.\" To account for possible deposition, could you let us know what cross was performed to create these triple-hets (e.g., female Lp-210; Saglin-GD X male vasa-Cas9)?"))
+pander::pandoc.p(str_c("* ", "\"To distinguish among these possibilities, we generated females carrying single heterozygous copies of the three unlinked transgenes SagGDzpg, Lp::Sc2A10 and a non-fluorescent (puromycin resistance marked) vasa-Cas9. The progeny of these triple-transgenic females crossed to WT males showed markedly better homing rates (>79 % GFP inheritance) (Fig. 4B).\" \n To account for possible deposition, could you let us know what cross was performed to create these triple-hets (e.g., female Lp-210/Lp-210; Saglin-GD/Saglin-GD X male vasa-Cas9/vasa-Cas9)?"))
 
+pander::pandoc.p(str_c("* ", "Would you be able to provide the plasmid map for the non-fluorescent (puromycin resistance marked) vasa-Cas9?"))
+
+pander::pandoc.p(str_c("* ", "\"Approximate gating completed with visual examination of a sample of 200 larvae suggested 54.1% DsRed inheritance at the Saglin locus, an even more modest inheritance bias than for GFP at the Lp locus.\" \n Our database framework does not allow us to incorporate data with only percentages and it is not possible to directly get 54.1% from N/200. Could you provide the integer values?"))
+
+pander::pandoc.p(str_c("* ", "\"We then sought to examine the homing rates at the two loci at a larger scale, using COPAS flow cytometry to analyse the progeny from [SagGDvasa /Y ; Lp::Sc2A10/+] males backcrossed en masse to wild-type females, and from [SagGDvasa /+ ; Lp::Sc2A10/+] females backcrossed en masse to wild-type males. The male cross yielded only 405 larvae, of which 391 were GFP positive (GFP inheritance: 96.5%, corresponding to a homing rate of 93%). DsRed on the X chromosome was, as expected, passed on to 50% of the progeny (daughters). The female cross yielded 5197 larvae showing 95.1% GFP inheritance and 80.7% DsRed inheritance, corresponding to homing rates of 90.2% at the Lp locus and 61.4% at the Saglin locus.\" \n To account for possible deposition, could you let us know what cross was performed to create these hets?"))
 
 ```
