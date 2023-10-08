@@ -11,6 +11,7 @@ css: styles.css
 ---
 
 ## What is this presentation?
+
 -   Slides are generated in R from a meta-analysis data set and screenshots from the paper
 -   Feedback on my interpretation of the paper and how best to present it is very much appreciated
 -   In addition to these JCs, we intended to send slides to the original authors to allow them the opportunity to find mistakes in our interpretation of their data
@@ -25,10 +26,10 @@ rm(list = ls())
 # ideally we would be able to loop this whole file for all papers
 # not sure how to  do that practically without making it unreadable
 # slide loops are hard to understand
-slide_pub <- c("Green2023")
+slide_pub <- c("Pescod2023")
 
 # Include figures
-include_paper_figures <- FALSE
+include_paper_figures <- TRUE
 
 library(plotly)
 library(data.table)
@@ -85,10 +86,9 @@ for (p in slide_pub) {
     rbind(cross_data, readRDS(str_c("../Processed/", "data_", p, ".RDS")))
 }
 
-
-warning("we removed publication and strain as a pairing factor for this presentation")
-cross_matching_selected <- cross_matching_selected[-1]
-cross_matching_selected <- cross_matching_selected[!(cross_matching_selected %in% cross_matching[["Strain"]])]
+# warning("we removed publication and strain as a pairing factor for this presentation")
+# cross_matching_selected <- cross_matching_selected[-1]
+# cross_matching_selected <- cross_matching_selected[!(cross_matching_selected %in% cross_matching[["Strain"]])]
 
 # Here we create a list of variables relevant for generating the graphs
 input_df_ref <- list(
@@ -1351,3 +1351,13 @@ pander::pandoc.p(str_c("* ", "\"Approximate gating completed with visual examina
 pander::pandoc.p(str_c("* ", "\"We then sought to examine the homing rates at the two loci at a larger scale, using COPAS flow cytometry to analyse the progeny from [SagGDvasa /Y ; Lp::Sc2A10/+] males backcrossed en masse to wild-type females, and from [SagGDvasa /+ ; Lp::Sc2A10/+] females backcrossed en masse to wild-type males. The male cross yielded only 405 larvae, of which 391 were GFP positive (GFP inheritance: 96.5%, corresponding to a homing rate of 93%). DsRed on the X chromosome was, as expected, passed on to 50% of the progeny (daughters). The female cross yielded 5197 larvae showing 95.1% GFP inheritance and 80.7% DsRed inheritance, corresponding to homing rates of 90.2% at the Lp locus and 61.4% at the Saglin locus.\" \n To account for possible deposition, could you let us know what cross was performed to create these hets?"))
 
 ```
+
+```{r , eval="Pescod2023" %in% slide_pub, results = 'asis'}
+
+pander::pandoc.header(str_c(clarif_text, "Pescod2023"), level = 2)
+
+pander::pandoc.p(str_c("* ", "Could you provide the raw progeny counts associated with the inheritance bias crosses in S1/Fig4 and Fig5."))
+
+pander::pandoc.p(str_c("* ", "\"Mosquitoes from the vas2-5958 colony were backcrossed to G3 and offspring were screened for the gene drive marker; 65 F1 males were mated individually to three G3 females, with eggs collected from each group and screened for the gene drive element.\" \n To account for possible deposition, could you let us know what F0 cross was performed to create the F1 hets? (e.g., female homozygous for vas2-5958 to WT males)"))
+```
+
